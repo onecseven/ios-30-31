@@ -19,21 +19,5 @@ struct timer0_1App: App {
   }
 }
 
-enum TimerState {
-  case IDLE
-  case RUNNING
-  case STOPPED
-}
 
-class TaskList {
-  var tasks: [Task] = [STOP_TASK]
-  var isLooping: Bool = false
-  var next: Int = 0 // tasks index
-  var state: TimerState = TimerState.IDLE
-  var currentTask: Task? = nil
-  func start() {}
-  func stop() {}
-  func bump() {}
-  func rearrange() {}
-}
 
