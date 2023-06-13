@@ -14,29 +14,9 @@ struct timer0_1App: App {
         ContentView()
         }
     }
-}
-
-class Task {
-  var name: String
-  var duration: Int
-  var icon: String
-  var color: String
-  var remaining: Int
-  func tick() {}
-  func addTime() {}
-  init(name: String, duration: Int, icon: String, color: String) {
-    self.name = name
-    self.duration = duration
-    self.icon = icon
-    self.color = color
-    self.remaining = duration
+  var pol: String {
+    return ""
   }
-}
-
-let STOP_TASK: Task = Task(name: "_STOP", duration: 0, icon: "", color: "")
-
-func isStopTask(_ task: Task) -> Bool {
-  return task.name == "_STOP"
 }
 
 enum TimerState {
@@ -57,4 +37,3 @@ class TaskList {
   func rearrange() {}
 }
 
-var pollo = TimerTask(name: "pollo", seconds: 2, icon: "po", color: "lol", remaining: 1)
