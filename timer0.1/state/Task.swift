@@ -10,17 +10,17 @@ import Foundation
 
 
 
-class Task {
+struct Task {
   enum taskStatus {
     case OVER
     case FULL
     case TICKING
   }
-  var name: String
-  var duration: Int
-  var icon: String
-  var color: String
-  var remaining: Int
+ var name: String
+ var duration: Int
+ var icon: String
+ var color: String
+ var remaining: Int
   
   var status: taskStatus {
     switch remaining {
@@ -52,7 +52,7 @@ class Task {
       }
   }
   
-  func tick() -> Bool {
+  mutating func tick() -> Bool {
     if remaining > 0 {
       remaining -= 1
       return true
@@ -61,11 +61,11 @@ class Task {
     }
   }
   
-  func refill() {
+  mutating func refill() {
     remaining = duration
   }
   
-  func addTime() {
+  mutating func addTime() {
     let potential = quickChangeValue + remaining
     if potential > duration {
       remaining = duration
@@ -74,7 +74,7 @@ class Task {
     }
   }
   
-  func takeTime()  {
+  mutating func takeTime()  {
     let potential = quickChangeValue - remaining
     if potential < 0 {
       remaining = 0
@@ -96,12 +96,21 @@ class Task {
     self.color = color
     self.remaining = duration
   }
-}
-
-class STOP_TASK: Task {
-  init() {
-    super.init(name: "_STOP", duration: 0, icon: "", color: "")
+  
+  init(name: String, duration: Int, icon: String, color: String, remaining: Int) {
+    self.name = name
+    self.duration = duration
+    self.icon = icon
+    self.color = color
+    self.remaining = remaining
   }
 }
 
+//class STOP_TASK: Task {
+//  init() {
+//    super.init(name: "_STOP", duration: 0, icon: "", color: "")
+//  }
+//}
 
+
+let STOP_TASK = Task(name: "_STOP", duration: 0, icon: "", color: "")

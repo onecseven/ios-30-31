@@ -14,18 +14,20 @@ struct pollo {
 }
 
 struct ContentView: View {
-  @State var tList: TaskList = TaskList(withTasks: [Task(name: "First", duration: 300, icon: "", color: ""), Task(name: "Second", duration: 600, icon: "", color: "")])
-  
+  @StateObject var tList: TaskList = TaskList(withTasks: [Task(name: "First", duration: 300, icon: "", color: ""), Task(name: "Second", duration: 600, icon: "", color: "")])
+   
     var body: some View {
       VStack{
-        Text(tList.tasks[0].name)
-          .padding()
-          .onAppear(){
-            print(TimerColors.gray)
-          }
-        Text("Duration: \(tList.tasks[0].remaining)")
-        Button(action: { tList.bump() }) {
+        Text(tList.currentTask.name)
+        Text(String(tList.currentTask.remaining))
+        Button(action: { self.tList.start() }) {
           Text("Start")
+        }
+        Button(action: { self.tList.stop() }) {
+          Text("Stop")
+        }
+        Button(action: { self.tList.rearrange(taskIndex: 0, sendTo: tList.tasks.count  - 1 ) }) {
+          Text("Bump")
         }
       }
     }
