@@ -27,4 +27,4 @@ struct Colors {
   let aqua = Color(light: "#94ffed", medium: "#4ac1ad", dark: "#00826c")
 }
 
-let TimerColors = Colors()
+let TimerColors: Colors = Colors()

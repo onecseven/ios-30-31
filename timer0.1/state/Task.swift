@@ -96,8 +96,12 @@ class Task {
     self.color = color
     self.remaining = duration
   }
-
 }
 
-let STOP_TASK: Task = Task(name: "_STOP", duration: 0, icon: "", color: "")
+class STOP_TASK: Task {
+  init() {
+    super.init(name: "_STOP", duration: 0, icon: "", color: "")
+  }
+}
+
 
