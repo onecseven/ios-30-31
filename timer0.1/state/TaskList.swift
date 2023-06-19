@@ -43,50 +43,62 @@ struct InternalTimerState {
 
 
 
-class TaskList {
-  var tasks: [Task] = [STOP_TASK()]
-  var isLooping: Bool = false
-  private var tState: InternalTimerState = InternalTimerState()
+class TaskList: ObservableObject {
+  @Published var tasks: [Task] = [STOP_TASK]
+  @Published var isLooping: Bool = false
+  @Published var tState: InternalTimerState = InternalTimerState()
+  @Published var currentTask: Task = STOP_TASK
+  var timer: Timer = Timer()
+
+  enum TaskListDirection {
+    case top
+    case bottom
+  }
   
   var state: TimerState {
     return tState.state
   }
   
-  var timer: Timer = Timer()
-  
   @objc func tick() throws {
-    print("here")
+    
     if state != TimerState.RUNNING {
       return
     }
     
-    if let running = currentTask?.tick() {
-      if !running {
-        bump()
-      }
+    if tasks[0].tick() {
+      print("---")
+      tasks.map(_: { print($0.name, $0.remaining) })
     } else {
-      throw TaskListError.NoCurrentTask
+      print("Ended")
+      bump()
     }
+    mirror()
+    
   }
   
-  var currentTask: Task? {
-    return tasks.first
+  private func mirror() {
+    if let actualCurrent = tasks.first {
+      currentTask = Task(name: actualCurrent.name, duration: actualCurrent.duration, icon: actualCurrent.icon, color: actualCurrent.color, remaining: actualCurrent.remaining)
+    }
   }
 
   init(withTasks: [Task]) {
     tasks = withTasks
-    if (!withTasks.contains(where: { $0 is STOP_TASK })) {
-      tasks.append(STOP_TASK())
+    if (!withTasks.contains(where: { $0.name == "_STOP" })) {
+      tasks.append(STOP_TASK)
     }
+    currentTask = tasks[0]
   }
   
   private func new_timer() {
+    timer.invalidate()
     timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
     RunLoop.current.add(timer, forMode: .common)
   }
-      
+  
   func start() {
     tState.isRunning()
+    new_timer()
   }
   
   func done() {
@@ -98,30 +110,38 @@ class TaskList {
     tState.isStopped()
   }
 
-  func bump() { //default movement behavior i.e when task is over, next one rolls over or the execution stops
+  private func bump() { //default movement behavior i.e when task is over, next one rolls over or the execution stops
     tState.isLoading()
-    let temp = tasks.remove(at: 0)
-    if (temp is STOP_TASK && !isLooping) {
+    var temp = tasks.remove(at: 0)
+    if (temp.name == "_STOP" && !isLooping) {
       stop()
-      return
     }
+    temp.refill()
     tasks.append(temp)
-    tasks.last?.refill()
+    mirror()
     tState.doneLoading()
   }
   
-  func rearrange(index: Int, sendTo: TaskListDirection) {
+  func rearrange(taskIndex: Int, sendTo: TaskListDirection) {
     tState.isLoading()
 
-    //what happens if index === 0 and sendTo top
-    let temp = tasks.remove(at: index)
+    //what0 happens if index === 0 and sendTo top
+    let temp = tasks.remove(at: taskIndex)
     switch sendTo {
       case TaskListDirection.bottom:
         tasks.append(temp)
       case TaskListDirection.top:
         tasks.insert(temp, at: 0)
     }
-       
+    mirror()
+    tState.doneLoading()
+  }
+  
+  func rearrange(taskIndex: Int, sendTo: Int) {
+    tState.isLoading()
+    let temp = tasks.remove(at: taskIndex)
+    tasks.insert(temp, at: sendTo)
+    mirror()
     tState.doneLoading()
   }
   
@@ -133,7 +153,7 @@ class TaskList {
     tState.isLoading()
 
     tasks.remove(at: index)
-    
+    mirror()
     tState.doneLoading()
   }
 }
