@@ -67,15 +67,20 @@ struct Task {
   
   mutating func addTime() {
     let potential = quickChangeValue + remaining
-    if potential > duration {
+    print("Adding time: \(quickChangeValue/60)m")
+    if potential > duration { // prevents task from having a remaining time higher than its duration
       remaining = duration
-    } else {
+    } else if quickChangeValue == 0 { // adds 1 minute to tasks with a remaining value under 60
+      remaining += 60
+    } else { // happy path
       remaining = potential
     }
   }
   
+  
   mutating func takeTime()  {
-    let potential = quickChangeValue - remaining
+    let potential = abs(quickChangeValue - remaining)
+    print("Taking time: -\(quickChangeValue/60)m")
     if potential < 0 {
       remaining = 0
     } else {

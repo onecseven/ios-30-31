@@ -1,10 +1,3 @@
-//
-//  TaskList.swift
-//  timer0.1
-//
-//  Created by Tatiana Talavera on 12-06-23.
-//
-
 import Foundation
 
 enum TimerState {
@@ -27,6 +20,7 @@ enum TaskListDirection {
 struct InternalTimerState {
   var state: TimerState = TimerState.IDLE
   private var last: TimerState = TimerState.IDLE
+  
   mutating func isLoading() {
     last = state
     state = TimerState.LOADING
@@ -59,7 +53,7 @@ class TaskList: ObservableObject {
     return tState.state
   }
   
-  @objc func tick() throws {
+  @objc private func tick() throws {
     
     if state != TimerState.RUNNING {
       return
@@ -101,7 +95,9 @@ class TaskList: ObservableObject {
     new_timer()
   }
   
-  func done() {
+  func add_time() { tasks[0].addTime() }
+  func take_time() { tasks[0].takeTime() }
+  private func done() {
     tState.isIdle()
     timer.invalidate()
   }
