@@ -66,16 +66,8 @@ class TaskList: ObservableObject {
       print("Ended")
       bump()
     }
-    mirror()
-    
   }
   
-  private func mirror() {
-    if let actualCurrent = tasks.first {
-      currentTask = Task(name: actualCurrent.name, duration: actualCurrent.duration, icon: actualCurrent.icon, color: actualCurrent.color, remaining: actualCurrent.remaining)
-    }
-  }
-
   init(withTasks: [Task]) {
     tasks = withTasks
     if (!withTasks.contains(where: { $0.name == "_STOP" })) {
@@ -95,8 +87,14 @@ class TaskList: ObservableObject {
     new_timer()
   }
   
-  func add_time() { tasks[0].addTime() }
-  func take_time() { tasks[0].takeTime() }
+  // remove the next two things
+  func add_time() {
+    tasks[0].addTime()
+  }
+  func take_time() {
+    tasks[0].takeTime()
+  }
+  // stop deleting
   private func done() {
     tState.isIdle()
     timer.invalidate()
@@ -114,7 +112,6 @@ class TaskList: ObservableObject {
     }
     temp.refill()
     tasks.append(temp)
-    mirror()
     tState.doneLoading()
   }
   
@@ -129,7 +126,6 @@ class TaskList: ObservableObject {
       case TaskListDirection.top:
         tasks.insert(temp, at: 0)
     }
-    mirror()
     tState.doneLoading()
   }
   
@@ -137,19 +133,13 @@ class TaskList: ObservableObject {
     tState.isLoading()
     let temp = tasks.remove(at: taskIndex)
     tasks.insert(temp, at: sendTo)
-    mirror()
     tState.doneLoading()
   }
-  
-  func addTask(task: Task) {
-    tasks.append(task)
-  }
-  
+    
   func deleteTask(index: Int) {
     tState.isLoading()
 
     tasks.remove(at: index)
-    mirror()
     tState.doneLoading()
   }
 }

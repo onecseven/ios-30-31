@@ -10,12 +10,10 @@ import SwiftUI
 struct timer0_1App: App {
   var body: some Scene {
     WindowGroup {
+        
         ContentView()
         }
     }
-  var pol: String {
-    return ""
-  }
 }
 
 
